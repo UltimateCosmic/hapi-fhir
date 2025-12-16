@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html xml:lang="es" xmlns="http://www.w3.org/1999/xhtml" lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Condiciones - RENHICE Local</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="http://hl7.org/fhir">
+
+    <link href="css/fhir.css" rel="stylesheet">
+    <link href="css/bootstrap-fhir.css" rel="stylesheet">
+    <link href="css/project.css" rel="stylesheet">
+    <link href="css/pygments-manni.css" rel="stylesheet">
+    <link href="css/jquery-ui.css" rel="stylesheet">
+    <link href="css/prism.css" rel="stylesheet">
+
+    <style type="text/css">
+        .condition-table {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .condition-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+            padding: 8px;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+        }
+        .condition-table td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .condition-table tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+        .badge-status {
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .badge-active {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .badge-resolved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .btn-view {
+            padding: 4px 10px;
+            background-color: var(--navbar-bg-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        .btn-view:hover {
+            background-color: var(--btn-hover-color);
+            color: white;
+        }
+        .search-box {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        .search-box input {
+            padding: 8px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .search-box button {
+            padding: 8px 15px;
+            background-color: var(--navbar-bg-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .search-box button:hover {
+            background-color: var(--btn-hover-color);
+        }
+    </style>
+</head>
+<body onload="document.body.style.opacity='1'; loadConditions();" style="opacity: 1;">
+
+    <div id="segment-header" class="segment">
+        <div class="container">
+            <div id="hl7-nav-left">
+                <a id="logo" no-external="true" href="/">
+                    <img height="40" alt="MINSA Perú" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='40'%3E%3Crect fill='%23BF0909' width='120' height='40'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='white' font-family='Arial' font-size='16' font-weight='bold'%3EMINSA PERÚ%3C/text%3E%3C/svg%3E">
+                </a>
+            </div>
+
+            <div id="ig-status">
+                <p>
+                    <span style="font-size:12pt;font-weight:bold">Simulador Local RENHICE - Interoperabilidad de Historia Clínica</span>
+                    <br>
+                    <span style="display:inline-block;">Versión en Desarrollo - Ambiente Local</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="segment-navbar" class="segment">
+        <div id="stripe"></div>
+        <div class="container">
+            <nav class="navbar navbar-inverse">
+                <div class="container">
+                    <button data-target=".navbar-inverse-collapse" class="navbar-toggle" data-toggle="collapse" type="button">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand hidden" href="http://hl7.org/fhir/R4/index.html">FHIR</a>
+                    <div class="nav-collapse collapse navbar-inverse-collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="index.html">Inicio</a></li>
+                            <li class="dropdown active">
+                                <a data-toggle="dropdown" href="#" class="dropdown-toggle">Recursos FHIR<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="pacientes.html">Pacientes</a></li>
+                                    <li><a href="profesionales.html">Profesionales</a></li>
+                                    <li><a href="organizaciones.html">Organizaciones</a></li>
+                                    <li class="active"><a href="condiciones.html">Condiciones</a></li>
+                                    <li><a href="medicamentos.html">Medicamentos</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="/fhir/metadata">API</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div id="segment-breadcrumb" class="segment">
+        <div class="container">
+            <ul class="breadcrumb">
+                <li><a href="index.html">Inicio</a></li>
+                <li><b>Condiciones</b></li>
+            </ul>
+        </div>
+    </div>
+
+    <a name="top"></a>
+    <div id="segment-content" class="segment">
+        <div class="container">
+            <div class="row">
+                <div class="inner-wrapper">
+                    <div class="col-12">
+                        <div id="publish-box">
+                            Recurso <strong>Condition</strong> - Condiciones clínicas y diagnósticos según el perfil ConditionPe de la guía HL7.FHIR.PE.COREPE
+                        </div>
+
+                        <h2 id="root">Condiciones Clínicas (Condition)</h2>
+                        
+                        <p>
+                            En esta sección se presenta la información de las condiciones clínicas y diagnósticos registrados en el sistema, 
+                            codificados con CIE-10 según el perfil <strong>ConditionPe</strong> de la guía de implementación nacional.
+                        </p>
+
+                        <div class="search-box">
+                            <strong>Buscar Condición:</strong>
+                            <input type="text" id="searchInput" placeholder="Buscar por código CIE-10 o descripción" />
+                            <button onclick="searchCondition()">Buscar</button>
+                            <button onclick="loadConditions()">Mostrar Todas</button>
+                        </div>
+
+                        <h3>Listado de Condiciones</h3>
+                        <div id="conditions-container">
+                            <div class="alert alert-info">Cargando condiciones desde el servidor FHIR...</div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a name="bottom"></a>
+    <div id="segment-footer" class="segment">
+        <div class="container">
+            <div class="inner-wrapper">
+                <p>
+                    Simulador Local RENHICE/Dyaku - Ambiente de Desarrollo
+                    <br>
+                    Links: <a style="color: var(--footer-hyperlink-text-color)" href="index.html">Inicio</a> |
+                    <a style="color: var(--footer-hyperlink-text-color)" href="/fhir/metadata">API FHIR</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="js/fhir-client.js"></script>
+    <script>
+        async function loadConditions() {
+            showLoading('conditions-container');
+            
+            const bundle = await fetchFHIRResources('Condition', { _count: 50 });
+            
+            if (!bundle) {
+                showError('conditions-container', 'No se pudo conectar al servidor FHIR');
+                return;
+            }
+            
+            if (!bundle.entry || bundle.entry.length === 0) {
+                showNoData('conditions-container');
+                return;
+            }
+            
+            displayConditions(bundle.entry);
+        }
+
+        function displayConditions(entries) {
+            const container = document.getElementById('conditions-container');
+            
+            let html = `
+                <p><strong>Total de condiciones:</strong> ${entries.length}</p>
+                <table class="condition-table grid">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Código CIE-10</th>
+                            <th>Descripción</th>
+                            <th>Paciente</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            entries.forEach(entry => {
+                const condition = entry.resource;
+                const id = condition.id;
+                const code = condition.code?.coding?.[0]?.code || 'N/A';
+                const display = condition.code?.coding?.[0]?.display || condition.code?.text || 'N/A';
+                const patientRef = condition.subject?.reference || 'N/A';
+                const patientId = patientRef.includes('/') ? patientRef.split('/').pop() : patientRef;
+                const clinicalStatus = condition.clinicalStatus?.coding?.[0]?.code || 'unknown';
+                const statusLabel = clinicalStatus === 'active' ? 'Activa' : (clinicalStatus === 'resolved' ? 'Resuelta' : clinicalStatus);
+                const statusClass = clinicalStatus === 'active' ? 'badge-active' : 'badge-resolved';
+                const recordedDate = formatDate(condition.recordedDate || condition.onsetDateTime);
+                
+                html += `
+                    <tr>
+                        <td><code>${id}</code></td>
+                        <td>${code}</td>
+                        <td>${display}</td>
+                        <td><code>${patientId}</code></td>
+                        <td><span class="badge-status ${statusClass}">${statusLabel}</span></td>
+                        <td>${recordedDate}</td>
+                        <td>
+                            <a href="/fhir/Condition/${id}" target="_blank" class="btn-view">Ver JSON</a>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        async function searchCondition() {
+            const searchValue = document.getElementById('searchInput').value.trim();
+            
+            if (!searchValue) {
+                loadConditions();
+                return;
+            }
+            
+            showLoading('conditions-container');
+            
+            const bundle = await fetchFHIRResources('Condition', { 
+                code: searchValue,
+                _count: 50 
+            });
+            
+            if (!bundle || !bundle.entry || bundle.entry.length === 0) {
+                const container = document.getElementById('conditions-container');
+                container.innerHTML = '<div class="alert alert-warning">No se encontraron condiciones con ese criterio de búsqueda.</div>';
+                return;
+            }
+            
+            displayConditions(bundle.entry);
+        }
+
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchCondition();
+            }
+        });
+        
+        // Cargar condiciones al inicio
+        window.addEventListener('load', function() {
+            loadConditions();
+        });
+    </script>
+</body>
+</html>
