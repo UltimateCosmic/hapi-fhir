@@ -73,6 +73,8 @@ async function fetchFHIRResources(resourceType, params = {}) {
         return await fhirClient.search(resourceType, params);
     } catch (error) {
         console.error('Error fetching FHIR resources:', error);
+        console.error('URL intentada:', `${fhirClient.baseUrl}/${resourceType}`);
+        console.error('Detalles del error:', error.message);
         return null;
     }
 }
