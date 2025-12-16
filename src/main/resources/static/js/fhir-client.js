@@ -108,3 +108,76 @@ function getIdentifier(identifiers) {
 function getHumanName(nameArray) {
     return fhirClient.getHumanName(nameArray);
 }
+
+// Funciones auxiliares para formatear datos
+function formatName(nameArray) {
+    if (!nameArray || nameArray.length === 0) return 'Sin nombre';
+    const name = nameArray[0];
+    const given = name.given ? name.given.join(' ') : '';
+    const family = name.family || '';
+    return `${given} ${family}`.trim() || name.text || 'Sin nombre';
+}
+
+function formatGender(gender) {
+    const genderMap = {
+        'male': 'Masculino',
+        'female': 'Femenino',
+        'other': 'Otro',
+        'unknown': 'Desconocido'
+    };
+    return genderMap[gender] || gender || 'N/A';
+}
+
+function formatIdentifier(identifiers) {
+    if (!identifiers || identifiers.length === 0) return 'N/A';
+    
+    // Buscar DNI primero
+    const dni = identifiers.find(id => 
+        id.system && id.system.includes('dni')
+    );
+    
+    if (dni && dni.value) return dni.value;
+    
+    // Si no hay DNI, devolver el primer identificador
+    return identifiers[0].value || 'N/A';
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+        return date.toLocaleDateString('es-PE', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        });
+    } catch (e) {
+        return dateString;
+    }
+}
+
+function formatCodeableConcept(concept) {
+    if (!concept) return 'N/A';
+    if (concept.text) return concept.text;
+    if (concept.coding && concept.coding.length > 0) {
+        return concept.coding[0].display || concept.coding[0].code || 'N/A';
+    }
+    return 'N/A';
+}
+
+function formatAddress(addressArray) {
+    if (!addressArray || addressArray.length === 0) return 'N/A';
+    const addr = addressArray[0];
+    return addr.text || addr.city || 'N/A';
+}
+
+function formatStatus(status) {
+    const statusMap = {
+        'active': 'Activo',
+        'inactive': 'Inactivo',
+        'completed': 'Completado',
+        'suspended': 'Suspendido'
+    };
+    return statusMap[status] || status || 'N/A';
+}

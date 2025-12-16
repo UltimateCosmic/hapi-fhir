@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API FHIR</title>
+</head>
+<body>
+    <h1>Test API FHIR</h1>
+    <button onclick="testPatients()">Test Pacientes</button>
+    <button onclick="testConditions()">Test Condiciones</button>
+    <div id="result"></div>
+    
+    <script>
+        async function testPatients() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Cargando...';
+            
+            try {
+                const response = await fetch('/fhir/Patient?_count=5');
+                const data = await response.json();
+                result.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                result.innerHTML = 'Error: ' + error.message;
+            }
+        }
+        
+        async function testConditions() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Cargando...';
+            
+            try {
+                const response = await fetch('/fhir/Condition?_count=5');
+                const data = await response.json();
+                result.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                result.innerHTML = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
