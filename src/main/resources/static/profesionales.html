@@ -23,18 +23,29 @@
         .practitioner-table {
             width: 100%;
             margin-top: 20px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #ddd;
         }
         .practitioner-table th {
             background-color: #f5f5f5;
             font-weight: bold;
-            padding: 12px;
+            padding: 15px 20px;
             text-align: left;
             border-bottom: 2px solid #ddd;
+            border-right: 1px solid #e0e0e0;
+        }
+        .practitioner-table th:last-child {
+            border-right: none;
         }
         .practitioner-table td {
-            padding: 12px;
+            padding: 15px 20px;
             border-bottom: 1px solid #eee;
+            border-right: 1px solid #f0f0f0;
+        }
+        .practitioner-table td:last-child {
+            border-right: none;
         }
         .practitioner-table tbody tr:hover {
             background-color: #f9f9f9;
@@ -220,7 +231,9 @@
                             <th>Identificación</th>
                             <th>Nombre Completo</th>
                             <th>Género</th>
-                            <th>Acciones</th>
+                            <th>Teléfono</th>
+                            <th>Email</th>
+                            <th>Ver JSON</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -232,6 +245,8 @@
                 const identifier = getIdentifier(practitioner.identifier);
                 const name = getHumanName(practitioner.name);
                 const gender = practitioner.gender ? (practitioner.gender === 'male' ? 'Masculino' : 'Femenino') : 'N/A';
+                const phone = formatTelecom(practitioner.telecom, 'phone');
+                const email = formatTelecom(practitioner.telecom, 'email');
                 
                 html += `
                     <tr>
@@ -239,6 +254,8 @@
                         <td>${identifier}</td>
                         <td>${name}</td>
                         <td>${gender}</td>
+                        <td>${phone}</td>
+                        <td>${email}</td>
                         <td>
                             <a href="/fhir/Practitioner/${id}" target="_blank" class="btn-view">Ver JSON</a>
                         </td>

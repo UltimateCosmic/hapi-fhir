@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html xml:lang="es" xmlns="http://www.w3.org/1999/xhtml" lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Detalle del Paciente - RENHICE Local</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="http://hl7.org/fhir">
+
+    <link rel="icon" href="img/favicon.png" type="image/png">
+
+    <link href="css/fhir.css" rel="stylesheet">
+    <link href="css/bootstrap-fhir.css" rel="stylesheet">
+    <link href="css/project.css" rel="stylesheet">
+    <link href="css/pygments-manni.css" rel="stylesheet">
+    <link href="css/jquery-ui.css" rel="stylesheet">
+    <link href="css/prism.css" rel="stylesheet">
+
+    <style type="text/css">
+        * {
+            border-radius: 0 !important;
+        }
+        
+        .detail-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+        }
+        
+        .detail-section h3 {
+            margin-top: 0;
+            color: var(--navbar-bg-color);
+            border-bottom: 2px solid var(--navbar-bg-color);
+            padding-bottom: 10px;
+        }
+        
+        .patient-header {
+            background-color: #fff;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid var(--navbar-bg-color);
+        }
+        
+        .patient-header h2 {
+            margin-top: 0;
+            color: var(--navbar-bg-color);
+        }
+        
+        .patient-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .patient-info-item {
+            padding: 10px;
+            background-color: #f5f5f5;
+        }
+        
+        .patient-info-item strong {
+            display: block;
+            color: #666;
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        
+        .patient-info-item span {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .resource-table {
+            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #ddd;
+        }
+        
+        .resource-table th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+            border-right: 1px solid #e0e0e0;
+            font-size: 13px;
+        }
+        
+        .resource-table th:last-child {
+            border-right: none;
+        }
+        
+        .resource-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            border-right: 1px solid #f0f0f0;
+            font-size: 13px;
+        }
+        
+        .resource-table td:last-child {
+            border-right: none;
+        }
+        
+        .resource-table tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .badge {
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .badge-active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-resolved {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .badge-completed {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+        
+        .badge-warning {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .btn-view {
+            padding: 4px 10px;
+            background-color: var(--navbar-bg-color);
+            color: white;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        
+        .btn-view:hover {
+            background-color: var(--btn-hover-color);
+            color: white;
+        }
+        
+        .btn-back {
+            padding: 8px 15px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        
+        .btn-back:hover {
+            background-color: #5a6268;
+            color: white;
+        }
+        
+        .no-data {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .loading {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            font-weight: 500;
+        }
+        
+        .tab.active {
+            background-color: white;
+            border-bottom: 2px solid white;
+            margin-bottom: -2px;
+            color: var(--navbar-bg-color);
+        }
+        
+        .tab:hover {
+            background-color: #e9ecef;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body onload="document.body.style.opacity='1'; loadPatientDetail();" style="opacity: 1;">
+
+    <div id="segment-header" class="segment">
+        <div class="container">
+            <div id="hl7-nav-left">
+                <a id="logo" no-external="true" href="https://www.gob.pe/minsa">
+                    <img height="40" alt="Ministerio de Salud" src="img/minsa.png">
+                </a>
+            </div>
+
+            <div id="ig-status">
+                <p>
+                    <span style="font-size:12pt;font-weight:bold">Interoperabilidad de Historia Clínica - PERÚ (versión en desarrollo)</span>
+                    <br>
+                    <span style="display:inline-block;">0.1 - ci-build
+                        <img alt="Peru flag" src="/img/per.svg" height="16" title="Peru">
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div id="segment-navbar" class="segment">
+        <div id="stripe"></div>
+        <div class="container">
+            <nav class="navbar navbar-inverse">
+                <div class="container">
+                    <button data-target=".navbar-inverse-collapse" class="navbar-toggle" data-toggle="collapse" type="button">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand hidden" href="http://hl7.org/fhir/R4/index.html">FHIR</a>
+                    <div class="nav-collapse collapse navbar-inverse-collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="index.html">Inicio</a></li>
+                            <li class="dropdown active">
+                                <a data-toggle="dropdown" href="#" class="dropdown-toggle">Recursos FHIR<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li class="active"><a href="pacientes.html">Pacientes</a></li>
+                                    <li><a href="profesionales.html">Profesionales</a></li>
+                                    <li><a href="organizaciones.html">Organizaciones</a></li>
+                                    <li><a href="condiciones.html">Condiciones</a></li>
+                                    <li><a href="medicamentos.html">Medicamentos</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="/fhir/metadata">API</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </div>
+
+    <div id="segment-breadcrumb" class="segment">
+        <div class="container">
+            <ul class="breadcrumb">
+                <li><a href="index.html">Inicio</a></li>
+                <li><a href="pacientes.html">Pacientes</a></li>
+                <li><b>Detalle del Paciente</b></li>
+            </ul>
+        </div>
+    </div>
+
+    <a name="top"></a>
+    <div id="segment-content" class="segment">
+        <div class="container">
+            <div class="row">
+                <div class="inner-wrapper">
+                    <div class="col-12">
+                        <a href="pacientes.html" class="btn-back">← Volver a Pacientes</a>
+                        
+                        <div id="patient-header-container">
+                            <div class="loading">Cargando información del paciente...</div>
+                        </div>
+
+                        <div class="tabs" id="tabs-container" style="display: none;">
+                            <div class="tab active" onclick="showTab('resumen')">Resumen</div>
+                            <div class="tab" onclick="showTab('condiciones')">Condiciones</div>
+                            <div class="tab" onclick="showTab('medicamentos')">Medicamentos</div>
+                            <div class="tab" onclick="showTab('encounters')">Encuentros</div>
+                            <div class="tab" onclick="showTab('observations')">Observaciones</div>
+                            <div class="tab" onclick="showTab('procedures')">Procedimientos</div>
+                            <div class="tab" onclick="showTab('allergies')">Alergias</div>
+                        </div>
+
+                        <div id="tab-resumen" class="tab-content active">
+                            <div class="detail-section">
+                                <h3>Resumen Clínico</h3>
+                                <div id="resumen-content">
+                                    <div class="loading">Cargando resumen...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-condiciones" class="tab-content">
+                            <div class="detail-section">
+                                <h3>Condiciones y Diagnósticos</h3>
+                                <div id="condiciones-content">
+                                    <div class="loading">Cargando condiciones...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-medicamentos" class="tab-content">
+                            <div class="detail-section">
+                                <h3>Medicamentos y Tratamientos</h3>
+                                <div id="medicamentos-content">
+                                    <div class="loading">Cargando medicamentos...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-encounters" class="tab-content">
+                            <div class="detail-section">
+                                <h3>Encuentros Médicos (Encounters)</h3>
+                                <div id="encounters-content">
+                                    <div class="loading">Cargando encuentros...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-observations" class="tab-content">
+                            <div class="detail-section">
+                                <h3>Observaciones Clínicas</h3>
+                                <div id="observations-content">
+                                    <div class="loading">Cargando observaciones...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-procedures" class="tab-content">
+                            <div class="detail-section">
+                                <h3>Procedimientos Médicos</h3>
+                                <div id="procedures-content">
+                                    <div class="loading">Cargando procedimientos...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tab-allergies" class="tab-content">
+                            <div class="detail-section">
+                                <h3>Alergias e Intolerancias</h3>
+                                <div id="allergies-content">
+                                    <div class="loading">Cargando alergias...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a name="bottom"></a>
+    <div id="segment-footer" class="segment">
+        <div class="container">
+            <div class="inner-wrapper">
+                <p>
+                    FHIR Server - Guía de Implementación Dyaku MINSA
+                    <br>
+                    Links: <a style="color: var(--footer-hyperlink-text-color)" href="index.html">Inicio</a> |
+                    <a style="color: var(--footer-hyperlink-text-color)" href="/fhir/metadata">API FHIR</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="js/fhir-client.js"></script>
+    <script>
+        let patientId = null;
+        let patientData = null;
+
+        function showTab(tabName) {
+            // Ocultar todos los tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Mostrar el tab seleccionado
+            document.getElementById('tab-' + tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        async function loadPatientDetail() {
+            // Obtener el ID del paciente de la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            patientId = urlParams.get('id');
+            
+            if (!patientId) {
+                document.getElementById('patient-header-container').innerHTML = 
+                    '<div class="alert alert-warning">No se especificó un ID de paciente</div>';
+                return;
+            }
+            
+            try {
+                // Cargar datos del paciente
+                const response = await fetch(`/fhir/Patient/${patientId}`);
+                if (!response.ok) {
+                    throw new Error('Paciente no encontrado');
+                }
+                
+                patientData = await response.json();
+                displayPatientHeader(patientData);
+                
+                // Mostrar tabs
+                document.getElementById('tabs-container').style.display = 'flex';
+                
+                // Cargar todos los recursos relacionados
+                await loadAllResources();
+                
+            } catch (error) {
+                console.error('Error cargando paciente:', error);
+                document.getElementById('patient-header-container').innerHTML = 
+                    `<div class="alert alert-warning">Error cargando información del paciente: ${error.message}</div>`;
+            }
+        }
+
+        function displayPatientHeader(patient) {
+            const name = formatName(patient.name);
+            const gender = formatGender(patient.gender);
+            const birthDate = patient.birthDate || 'N/A';
+            const identifier = formatIdentifier(patient.identifier);
+            const phone = formatTelecom(patient.telecom, 'phone');
+            const email = formatTelecom(patient.telecom, 'email');
+            const address = formatAddress(patient.address);
+            
+            // Calcular edad
+            let age = 'N/A';
+            if (birthDate && birthDate !== 'N/A') {
+                const birth = new Date(birthDate);
+                const today = new Date();
+                age = today.getFullYear() - birth.getFullYear();
+                const m = today.getMonth() - birth.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+                    age--;
+                }
+                age += ' años';
+            }
+            
+            const html = `
+                <div class="patient-header">
+                    <h2>${name}</h2>
+                    <p style="margin: 5px 0; color: #666;">ID: <code>${patient.id}</code></p>
+                    
+                    <div class="patient-info-grid">
+                        <div class="patient-info-item">
+                            <strong>DNI/Identificación</strong>
+                            <span>${identifier}</span>
+                        </div>
+                        <div class="patient-info-item">
+                            <strong>Género</strong>
+                            <span>${gender}</span>
+                        </div>
+                        <div class="patient-info-item">
+                            <strong>Fecha de Nacimiento</strong>
+                            <span>${birthDate}</span>
+                        </div>
+                        <div class="patient-info-item">
+                            <strong>Edad</strong>
+                            <span>${age}</span>
+                        </div>
+                        <div class="patient-info-item">
+                            <strong>Teléfono</strong>
+                            <span>${phone}</span>
+                        </div>
+                        <div class="patient-info-item">
+                            <strong>Email</strong>
+                            <span>${email}</span>
+                        </div>
+                        <div class="patient-info-item" style="grid-column: span 2;">
+                            <strong>Dirección</strong>
+                            <span>${address}</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 15px;">
+                        <a href="/fhir/Patient/${patient.id}" target="_blank" class="btn-view">Ver JSON Completo</a>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('patient-header-container').innerHTML = html;
+        }
+
+        async function loadAllResources() {
+            // Cargar en paralelo todos los recursos
+            await Promise.all([
+                loadResumen(),
+                loadConditions(),
+                loadMedications(),
+                loadEncounters(),
+                loadObservations(),
+                loadProcedures(),
+                loadAllergies()
+            ]);
+        }
+
+        async function loadResumen() {
+            const container = document.getElementById('resumen-content');
+            
+            try {
+                // Obtener conteos de recursos
+                const [conditions, medications, encounters, observations] = await Promise.all([
+                    fetch(`/fhir/Condition?patient=${patientId}&_summary=count`).then(r => r.json()),
+                    fetch(`/fhir/MedicationStatement?subject=${patientId}&_summary=count`).then(r => r.json()),
+                    fetch(`/fhir/Encounter?patient=${patientId}&_summary=count`).then(r => r.json()),
+                    fetch(`/fhir/Observation?patient=${patientId}&_summary=count`).then(r => r.json())
+                ]);
+                
+                const html = `
+                    <div class="patient-info-grid">
+                        <div class="patient-info-item">
+                            <strong>Condiciones Registradas</strong>
+                            <span style="font-size: 24px; color: var(--navbar-bg-color);">${conditions.total || 0}</span>
+                        </div>
+                        <div class="patient-info-item">
+                            <strong>Medicamentos</strong>
+                            <span style="font-size: 24px; color: var(--navbar-bg-color);">${medications.total || 0}</span>
+                        </div>
+                        <div class="patient-info-item">
+                            <strong>Encuentros Médicos</strong>
+                            <span style="font-size: 24px; color: var(--navbar-bg-color);">${encounters.total || 0}</span>
+                        </div>
+                        <div class="patient-info-item">
+                            <strong>Observaciones</strong>
+                            <span style="font-size: 24px; color: var(--navbar-bg-color);">${observations.total || 0}</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; padding: 15px; background-color: white;">
+                        <p><strong>Resumen:</strong> Este paciente tiene un total de <strong>${(conditions.total || 0) + (medications.total || 0) + (encounters.total || 0) + (observations.total || 0)}</strong> recursos FHIR registrados en el sistema.</p>
+                    </div>
+                `;
+                
+                container.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error cargando resumen:', error);
+                container.innerHTML = '<div class="no-data">Error cargando resumen</div>';
+            }
+        }
+
+        async function loadConditions() {
+            const container = document.getElementById('condiciones-content');
+            
+            try {
+                const response = await fetch(`/fhir/Condition?patient=${patientId}&_count=100`);
+                const bundle = await response.json();
+                
+                if (!bundle.entry || bundle.entry.length === 0) {
+                    container.innerHTML = '<div class="no-data">No hay condiciones registradas para este paciente</div>';
+                    return;
+                }
+                
+                let html = `
+                    <p><strong>Total:</strong> ${bundle.total || bundle.entry.length} condiciones</p>
+                    <table class="resource-table">
+                        <thead>
+                            <tr>
+                                <th>Código CIE-10</th>
+                                <th>Descripción</th>
+                                <th>Estado Clínico</th>
+                                <th>Fecha Registro</th>
+                                <th>Ver</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                bundle.entry.forEach(entry => {
+                    const condition = entry.resource;
+                    const code = condition.code?.coding?.[0]?.code || 'N/A';
+                    const display = condition.code?.coding?.[0]?.display || condition.code?.text || 'N/A';
+                    const status = condition.clinicalStatus?.coding?.[0]?.code || 'unknown';
+                    const statusLabel = status === 'active' ? 'Activa' : (status === 'resolved' ? 'Resuelta' : status);
+                    const statusClass = status === 'active' ? 'badge-active' : 'badge-resolved';
+                    const date = formatDate(condition.recordedDate || condition.onsetDateTime);
+                    
+                    html += `
+                        <tr>
+                            <td><code>${code}</code></td>
+                            <td>${display}</td>
+                            <td><span class="badge ${statusClass}">${statusLabel}</span></td>
+                            <td>${date}</td>
+                            <td><a href="/fhir/Condition/${condition.id}" target="_blank" class="btn-view">Ver JSON</a></td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                        </tbody>
+                    </table>
+                `;
+                
+                container.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error cargando condiciones:', error);
+                container.innerHTML = '<div class="no-data">Error cargando condiciones</div>';
+            }
+        }
+
+        async function loadMedications() {
+            const container = document.getElementById('medicamentos-content');
+            
+            try {
+                const response = await fetch(`/fhir/MedicationStatement?subject=${patientId}&_count=100`);
+                const bundle = await response.json();
+                
+                if (!bundle.entry || bundle.entry.length === 0) {
+                    container.innerHTML = '<div class="no-data">No hay medicamentos registrados para este paciente</div>';
+                    return;
+                }
+                
+                let html = `
+                    <p><strong>Total:</strong> ${bundle.total || bundle.entry.length} medicamentos</p>
+                    <table class="resource-table">
+                        <thead>
+                            <tr>
+                                <th>Medicamento</th>
+                                <th>Estado</th>
+                                <th>Dosificación</th>
+                                <th>Fecha</th>
+                                <th>Ver</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                bundle.entry.forEach(entry => {
+                    const med = entry.resource;
+                    const name = med.medicationCodeableConcept?.text || 
+                                med.medicationCodeableConcept?.coding?.[0]?.display || 
+                                'Medicamento sin nombre';
+                    const status = med.status || 'unknown';
+                    const statusLabel = status === 'active' ? 'Activo' : 
+                                       status === 'completed' ? 'Completado' : status;
+                    const statusClass = status === 'active' ? 'badge-active' : 'badge-completed';
+                    const dosage = med.dosage?.[0]?.text || 'N/A';
+                    const date = formatDate(med.dateAsserted || med.effectiveDateTime);
+                    
+                    html += `
+                        <tr>
+                            <td><strong>${name}</strong></td>
+                            <td><span class="badge ${statusClass}">${statusLabel}</span></td>
+                            <td>${dosage}</td>
+                            <td>${date}</td>
+                            <td><a href="/fhir/MedicationStatement/${med.id}" target="_blank" class="btn-view">Ver JSON</a></td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                        </tbody>
+                    </table>
+                `;
+                
+                container.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error cargando medicamentos:', error);
+                container.innerHTML = '<div class="no-data">Error cargando medicamentos</div>';
+            }
+        }
+
+        async function loadEncounters() {
+            const container = document.getElementById('encounters-content');
+            
+            try {
+                const response = await fetch(`/fhir/Encounter?patient=${patientId}&_count=100`);
+                const bundle = await response.json();
+                
+                if (!bundle.entry || bundle.entry.length === 0) {
+                    container.innerHTML = '<div class="no-data">No hay encuentros registrados para este paciente</div>';
+                    return;
+                }
+                
+                let html = `
+                    <p><strong>Total:</strong> ${bundle.total || bundle.entry.length} encuentros</p>
+                    <table class="resource-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Estado</th>
+                                <th>Fecha Inicio</th>
+                                <th>Fecha Fin</th>
+                                <th>Ubicación</th>
+                                <th>Ver</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                bundle.entry.forEach(entry => {
+                    const encounter = entry.resource;
+                    const type = encounter.type?.[0]?.coding?.[0]?.display || 
+                                encounter.type?.[0]?.text || 'N/A';
+                    const status = encounter.status || 'unknown';
+                    const statusLabel = status === 'finished' ? 'Finalizado' : 
+                                       status === 'in-progress' ? 'En Progreso' : status;
+                    const statusClass = status === 'finished' ? 'badge-completed' : 'badge-active';
+                    const start = formatDate(encounter.period?.start);
+                    const end = formatDate(encounter.period?.end);
+                    const location = encounter.location?.[0]?.location?.display || 'N/A';
+                    
+                    html += `
+                        <tr>
+                            <td>${type}</td>
+                            <td><span class="badge ${statusClass}">${statusLabel}</span></td>
+                            <td>${start}</td>
+                            <td>${end}</td>
+                            <td>${location}</td>
+                            <td><a href="/fhir/Encounter/${encounter.id}" target="_blank" class="btn-view">Ver JSON</a></td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                        </tbody>
+                    </table>
+                `;
+                
+                container.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error cargando encuentros:', error);
+                container.innerHTML = '<div class="no-data">Error cargando encuentros</div>';
+            }
+        }
+
+        async function loadObservations() {
+            const container = document.getElementById('observations-content');
+            
+            try {
+                const response = await fetch(`/fhir/Observation?patient=${patientId}&_count=100`);
+                const bundle = await response.json();
+                
+                if (!bundle.entry || bundle.entry.length === 0) {
+                    container.innerHTML = '<div class="no-data">No hay observaciones registradas para este paciente</div>';
+                    return;
+                }
+                
+                let html = `
+                    <p><strong>Total:</strong> ${bundle.total || bundle.entry.length} observaciones</p>
+                    <table class="resource-table">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Valor</th>
+                                <th>Unidad</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Ver</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                bundle.entry.forEach(entry => {
+                    const obs = entry.resource;
+                    const code = obs.code?.coding?.[0]?.display || obs.code?.text || 'N/A';
+                    const value = obs.valueQuantity?.value || 
+                                 obs.valueString || 
+                                 obs.valueCodeableConcept?.text || 'N/A';
+                    const unit = obs.valueQuantity?.unit || '';
+                    const status = obs.status || 'unknown';
+                    const statusClass = status === 'final' ? 'badge-completed' : 'badge-warning';
+                    const date = formatDate(obs.effectiveDateTime || obs.issued);
+                    
+                    html += `
+                        <tr>
+                            <td>${code}</td>
+                            <td><strong>${value}</strong></td>
+                            <td>${unit}</td>
+                            <td><span class="badge ${statusClass}">${status}</span></td>
+                            <td>${date}</td>
+                            <td><a href="/fhir/Observation/${obs.id}" target="_blank" class="btn-view">Ver JSON</a></td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                        </tbody>
+                    </table>
+                `;
+                
+                container.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error cargando observaciones:', error);
+                container.innerHTML = '<div class="no-data">Error cargando observaciones</div>';
+            }
+        }
+
+        async function loadProcedures() {
+            const container = document.getElementById('procedures-content');
+            
+            try {
+                const response = await fetch(`/fhir/Procedure?patient=${patientId}&_count=100`);
+                const bundle = await response.json();
+                
+                if (!bundle.entry || bundle.entry.length === 0) {
+                    container.innerHTML = '<div class="no-data">No hay procedimientos registrados para este paciente</div>';
+                    return;
+                }
+                
+                let html = `
+                    <p><strong>Total:</strong> ${bundle.total || bundle.entry.length} procedimientos</p>
+                    <table class="resource-table">
+                        <thead>
+                            <tr>
+                                <th>Procedimiento</th>
+                                <th>Estado</th>
+                                <th>Fecha</th>
+                                <th>Profesional</th>
+                                <th>Ver</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                bundle.entry.forEach(entry => {
+                    const proc = entry.resource;
+                    const code = proc.code?.coding?.[0]?.display || proc.code?.text || 'N/A';
+                    const status = proc.status || 'unknown';
+                    const statusClass = status === 'completed' ? 'badge-completed' : 'badge-warning';
+                    const date = formatDate(proc.performedDateTime || proc.performedPeriod?.start);
+                    const performer = proc.performer?.[0]?.actor?.display || 'N/A';
+                    
+                    html += `
+                        <tr>
+                            <td>${code}</td>
+                            <td><span class="badge ${statusClass}">${status}</span></td>
+                            <td>${date}</td>
+                            <td>${performer}</td>
+                            <td><a href="/fhir/Procedure/${proc.id}" target="_blank" class="btn-view">Ver JSON</a></td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                        </tbody>
+                    </table>
+                `;
+                
+                container.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error cargando procedimientos:', error);
+                container.innerHTML = '<div class="no-data">Error cargando procedimientos</div>';
+            }
+        }
+
+        async function loadAllergies() {
+            const container = document.getElementById('allergies-content');
+            
+            try {
+                const response = await fetch(`/fhir/AllergyIntolerance?patient=${patientId}&_count=100`);
+                const bundle = await response.json();
+                
+                if (!bundle.entry || bundle.entry.length === 0) {
+                    container.innerHTML = '<div class="no-data">No hay alergias registradas para este paciente</div>';
+                    return;
+                }
+                
+                let html = `
+                    <p><strong>Total:</strong> ${bundle.total || bundle.entry.length} alergias</p>
+                    <table class="resource-table">
+                        <thead>
+                            <tr>
+                                <th>Alérgeno</th>
+                                <th>Tipo</th>
+                                <th>Categoría</th>
+                                <th>Criticidad</th>
+                                <th>Estado</th>
+                                <th>Ver</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                bundle.entry.forEach(entry => {
+                    const allergy = entry.resource;
+                    const code = allergy.code?.coding?.[0]?.display || allergy.code?.text || 'N/A';
+                    const type = allergy.type || 'N/A';
+                    const category = allergy.category?.[0] || 'N/A';
+                    const criticality = allergy.criticality || 'N/A';
+                    const status = allergy.clinicalStatus?.coding?.[0]?.code || 'unknown';
+                    const statusClass = status === 'active' ? 'badge-active' : 'badge-resolved';
+                    
+                    html += `
+                        <tr>
+                            <td><strong>${code}</strong></td>
+                            <td>${type}</td>
+                            <td>${category}</td>
+                            <td>${criticality}</td>
+                            <td><span class="badge ${statusClass}">${status}</span></td>
+                            <td><a href="/fhir/AllergyIntolerance/${allergy.id}" target="_blank" class="btn-view">Ver JSON</a></td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                        </tbody>
+                    </table>
+                `;
+                
+                container.innerHTML = html;
+                
+            } catch (error) {
+                console.error('Error cargando alergias:', error);
+                container.innerHTML = '<div class="no-data">Error cargando alergias</div>';
+            }
+        }
+    </script>
+</body>
+</html>

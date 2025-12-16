@@ -23,18 +23,29 @@
         .organization-table {
             width: 100%;
             margin-top: 20px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #ddd;
         }
         .organization-table th {
             background-color: #f5f5f5;
             font-weight: bold;
-            padding: 12px;
+            padding: 15px 20px;
             text-align: left;
             border-bottom: 2px solid #ddd;
+            border-right: 1px solid #e0e0e0;
+        }
+        .organization-table th:last-child {
+            border-right: none;
         }
         .organization-table td {
-            padding: 12px;
+            padding: 15px 20px;
             border-bottom: 1px solid #eee;
+            border-right: 1px solid #f0f0f0;
+        }
+        .organization-table td:last-child {
+            border-right: none;
         }
         .organization-table tbody tr:hover {
             background-color: #f9f9f9;
@@ -231,8 +242,10 @@
                             <th>Código/Identificador</th>
                             <th>Nombre</th>
                             <th>Tipo</th>
+                            <th>Teléfono</th>
+                            <th>Dirección</th>
                             <th>Estado</th>
-                            <th>Acciones</th>
+                            <th>Ver JSON</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -244,6 +257,8 @@
                 const identifier = getIdentifier(org.identifier);
                 const name = org.name || 'N/A';
                 const type = org.type && org.type.length > 0 ? (org.type[0].text || org.type[0].coding?.[0]?.display || 'N/A') : 'N/A';
+                const phone = formatTelecom(org.telecom, 'phone');
+                const address = formatAddress(org.address);
                 const active = org.active !== undefined ? org.active : true;
                 const activeLabel = active ? 'Activo' : 'Inactivo';
                 const activeClass = active ? 'badge-active' : 'badge-inactive';
@@ -254,6 +269,8 @@
                         <td>${identifier}</td>
                         <td>${name}</td>
                         <td>${type}</td>
+                        <td>${phone}</td>
+                        <td>${address}</td>
                         <td><span class="${activeClass}">${activeLabel}</span></td>
                         <td>
                             <a href="/fhir/Organization/${id}" target="_blank" class="btn-view">Ver JSON</a>

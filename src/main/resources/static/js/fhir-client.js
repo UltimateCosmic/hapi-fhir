@@ -169,7 +169,35 @@ function formatCodeableConcept(concept) {
 function formatAddress(addressArray) {
     if (!addressArray || addressArray.length === 0) return 'N/A';
     const addr = addressArray[0];
-    return addr.text || addr.city || 'N/A';
+    
+    // Si hay texto completo, usarlo
+    if (addr.text) return addr.text;
+    
+    // Construir dirección desde componentes
+    let parts = [];
+    if (addr.line && addr.line.length > 0) {
+        parts.push(addr.line.join(', '));
+    }
+    if (addr.city) parts.push(addr.city);
+    if (addr.state) parts.push(addr.state);
+    if (addr.country) parts.push(addr.country);
+    
+    return parts.length > 0 ? parts.join(', ') : 'N/A';
+}
+
+function formatTelecom(telecomArray, type) {
+    if (!telecomArray || telecomArray.length === 0) return 'N/A';
+    
+    // Buscar por tipo específico (phone, email, etc.)
+    if (type) {
+        const filtered = telecomArray.filter(t => t.system === type);
+        if (filtered.length > 0) {
+            return filtered[0].value || 'N/A';
+        }
+    }
+    
+    // Si no se especifica tipo, devolver el primero disponible
+    return telecomArray[0].value || 'N/A';
 }
 
 function formatStatus(status) {

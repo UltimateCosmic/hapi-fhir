@@ -23,18 +23,29 @@
         .patient-table {
             width: 100%;
             margin-top: 20px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #ddd;
         }
         .patient-table th {
             background-color: #f5f5f5;
             font-weight: bold;
-            padding: 12px;
+            padding: 15px 20px;
             text-align: left;
             border-bottom: 2px solid #ddd;
+            border-right: 1px solid #e0e0e0;
+        }
+        .patient-table th:last-child {
+            border-right: none;
         }
         .patient-table td {
-            padding: 12px;
+            padding: 15px 20px;
             border-bottom: 1px solid #eee;
+            border-right: 1px solid #f0f0f0;
+        }
+        .patient-table td:last-child {
+            border-right: none;
         }
         .patient-table tbody tr:hover {
             background-color: #f9f9f9;
@@ -171,9 +182,10 @@
                         </p>
 
                         <div class="search-box">
-                            <strong>Buscar paciente...</strong>
+                            <strong>Buscar Paciente:</strong>
                             <input type="text" id="searchInput" placeholder="Buscar por nombre o DNI" />
                             <button onclick="searchPatient()">Buscar</button>
+                            <button onclick="loadPatients()">Mostrar Todos</button>
                         </div>
 
                         <h3>Listado de Pacientes</h3>
@@ -231,10 +243,13 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Nombre</th>
+                            <th>Nombre Completo</th>
                             <th>Género</th>
                             <th>Fecha de Nacimiento</th>
                             <th>DNI</th>
+                            <th>Teléfono</th>
+                            <th>Dirección</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -247,6 +262,8 @@
                 const gender = formatGender(patient.gender);
                 const birthDate = patient.birthDate || '-';
                 const identifier = formatIdentifier(patient.identifier);
+                const phone = formatTelecom(patient.telecom, 'phone');
+                const address = formatAddress(patient.address);
                 
                 html += `
                     <tr>
@@ -255,6 +272,12 @@
                         <td>${gender}</td>
                         <td>${birthDate}</td>
                         <td>${identifier}</td>
+                        <td>${phone}</td>
+                        <td>${address}</td>
+                        <td>
+                            <a href="paciente-detalle.html?id=${id}" class="btn-view" style="margin-right: 5px;">Ver Detalle</a>
+                            <a href="/fhir/Patient/${id}" target="_blank" class="btn-view">JSON</a>
+                        </td>
                     </tr>
                 `;
             });
