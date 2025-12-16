@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="http://hl7.org/fhir">
 
+    <link rel="icon" href="img/favicon.png" type="image/png">
+
     <link href="css/fhir.css" rel="stylesheet">
     <link href="css/bootstrap-fhir.css" rel="stylesheet">
     <link href="css/project.css" rel="stylesheet">
@@ -15,6 +17,9 @@
     <link href="css/prism.css" rel="stylesheet">
 
     <style type="text/css">
+        * {
+            border-radius: 0 !important;
+        }
         .organization-table {
             width: 100%;
             margin-top: 20px;
@@ -37,14 +42,12 @@
             background-color: #d4edda;
             color: #155724;
             padding: 3px 8px;
-            border-radius: 3px;
             font-size: 11px;
         }
         .badge-inactive {
             background-color: #f8d7da;
             color: #721c24;
             padding: 3px 8px;
-            border-radius: 3px;
             font-size: 11px;
         }
         .btn-view {
@@ -52,7 +55,6 @@
             background-color: var(--navbar-bg-color);
             color: white;
             text-decoration: none;
-            border-radius: 3px;
             font-size: 12px;
         }
         .btn-view:hover {
@@ -63,20 +65,17 @@
             margin: 20px 0;
             padding: 15px;
             background-color: #f5f5f5;
-            border-radius: 4px;
         }
         .search-box input {
             padding: 8px;
             width: 300px;
             border: 1px solid #ddd;
-            border-radius: 4px;
         }
         .search-box button {
             padding: 8px 15px;
             background-color: var(--navbar-bg-color);
             color: white;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
             margin-left: 10px;
         }
@@ -100,7 +99,7 @@
                     <span style="font-size:12pt;font-weight:bold">Interoperabilidad de Historia Clínica - PERÚ (versión en desarrollo)</span>
                     <br>
                     <span style="display:inline-block;">0.1 - ci-build
-                        <img alt="Peru flag" src="https://flagcdn.com/16x12/pe.png" height="16" title="Peru">
+                        <img alt="Peru flag" src="/img/per.svg" height="16" title="Peru">
                     </span>
                 </p>
             </div>
@@ -154,7 +153,7 @@
             <div class="row">
                 <div class="inner-wrapper">
                     <div class="col-12">
-                        <div id="publish-box">
+                        <div id="publish-box" style="font-family: verdana; font-size: 12px; margin-bottom: 15px;">
                             Recurso <strong>Organization</strong> - Organizaciones de salud según el perfil OrganizacionPe de la guía HL7.FHIR.PE.COREPE
                         </div>
 

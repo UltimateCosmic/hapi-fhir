@@ -7,6 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="http://hl7.org/fhir">
 
+    <link rel="icon" href="img/favicon.png" type="image/png">
+
     <link href="css/fhir.css" rel="stylesheet">
     <link href="css/bootstrap-fhir.css" rel="stylesheet">
     <link href="css/project.css" rel="stylesheet">
@@ -15,6 +17,9 @@
     <link href="css/prism.css" rel="stylesheet">
 
     <style type="text/css">
+        * {
+            border-radius: 0 !important;
+        }
         .resource-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -25,7 +30,6 @@
             padding: 20px;
             background-color: #f9f9f9;
             border: 1px solid #ddd;
-            border-radius: 0;
         }
         .resource-card h3 {
             margin-top: 0;
@@ -60,7 +64,7 @@
                     <span style="font-size:12pt;font-weight:bold">Interoperabilidad de Historia Clínica - PERÚ (versión en desarrollo)</span>
                     <br>
                     <span style="display:inline-block;">0.1 - ci-build
-                        <img alt="Peru flag" src="https://flagcdn.com/16x12/pe.png" height="16" title="Peru">
+                        <img alt="Peru flag" src="/img/per.svg" height="16" title="Peru">
                     </span>
                 </p>
             </div>
@@ -113,7 +117,7 @@
             <div class="row">
                 <div class="inner-wrapper">
                     <div class="col-12">
-                        <div id="publish-box">
+                        <div id="publish-box" style="font-family: verdana; font-size: 12px; margin-bottom: 15px;">
                             Servidor FHIR Local - Implementación basada en <strong>Guía Dyaku MINSA Perú</strong>
                         </div>
 
