@@ -9,6 +9,13 @@ server:
   tomcat:
     # allow | as a separator in URLs
     relaxed-query-chars: "|"
+    # Support for forwarded headers from reverse proxy (Nginx)
+    remoteip:
+      remote-ip-header: x-forwarded-for
+      protocol-header: x-forwarded-proto
+      port-header: x-forwarded-port
+  # Forward headers strategy for proper URL generation behind proxy
+  forward-headers-strategy: native
 
 management:
   # Actuator endpoints: only /actuator/health exposed by default
