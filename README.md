@@ -287,3 +287,4 @@ Este simulador es parte del proyecto SIH.SALUS y se utiliza exclusivamente para 
 **Versión**: 1.0.0  
 **Última Actualización**: Noviembre 2025  
 **Uso**: Solo Desarrollo y Pruebas
+
