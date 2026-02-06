@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xml:lang="es" xmlns="http://www.w3.org/1999/xhtml" lang="es">
+
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>Inicio - RENHICE Local</title>
@@ -20,21 +21,25 @@
         * {
             border-radius: 0 !important;
         }
+
         .resource-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
+
         .resource-card {
             padding: 20px;
             background-color: #f9f9f9;
             border: 1px solid #ddd;
         }
+
         .resource-card h3 {
             margin-top: 0;
             color: var(--navbar-bg-color);
         }
+
         .resource-card a {
             display: inline-block;
             margin-top: 10px;
@@ -44,24 +49,25 @@
             text-decoration: none;
             border-radius: 0;
         }
+
         .resource-card a:hover {
             background-color: var(--btn-hover-color);
         }
     </style>
 </head>
+
 <body onload="document.body.style.opacity='1';" style="opacity: 1;">
 
     <div id="segment-header" class="segment">
         <div class="container">
             <div id="hl7-nav-left">
-                <a id="logo" no-external="true" href="https://www.gob.pe/minsa">
-                    <img height="40" alt="Ministerio de Salud" src="img/primary-logo.png">
-                </a>
+                <img height="40" alt="Ministerio de Salud" src="img/primary-logo.png">
             </div>
 
             <div id="ig-status">
                 <p>
-                    <span style="font-size:12pt;font-weight:bold">Interoperabilidad de Historia Clínica - PERÚ (versión en desarrollo)</span>
+                    <span style="font-size:12pt;font-weight:bold">Interoperabilidad de Historia Clínica - PERÚ (versión
+                        en desarrollo)</span>
                     <br>
                     <span style="display:inline-block;">0.1 - ci-build
                         <img alt="Peru flag" src="/img/per.svg" height="16" title="Peru">
@@ -76,7 +82,8 @@
         <div class="container">
             <nav class="navbar navbar-inverse">
                 <div class="container">
-                    <button data-target=".navbar-inverse-collapse" class="navbar-toggle" data-toggle="collapse" type="button">
+                    <button data-target=".navbar-inverse-collapse" class="navbar-toggle" data-toggle="collapse"
+                        type="button">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -86,7 +93,8 @@
                         <ul class="nav navbar-nav">
                             <li class="active"><a href="index.html">Inicio</a></li>
                             <li class="dropdown">
-                                <a data-toggle="dropdown" href="#" class="dropdown-toggle">Recursos FHIR<b class="caret"></b></a>
+                                <a data-toggle="dropdown" href="#" class="dropdown-toggle">Recursos FHIR<b
+                                        class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li><a href="pacientes.html">Pacientes</a></li>
                                     <li><a href="profesionales.html">Profesionales</a></li>
@@ -122,55 +130,61 @@
                         </div>
 
                         <h2 id="root">Bienvenido al Servidor FHIR</h2>
-                        
+
                         <p>
-                            Este servidor FHIR implementa los perfiles y recursos definidos en la Guía de Implementación Dyaku 
-                            del Ministerio de Salud del Perú, permitiendo la interoperabilidad de historias clínicas electrónicas 
+                            Este servidor FHIR implementa los perfiles y recursos definidos en la Guía de Implementación
+                            Dyaku
+                            del Ministerio de Salud del Perú, permitiendo la interoperabilidad de historias clínicas
+                            electrónicas
                             según el estándar HL7 FHIR R4.
                         </p>
 
                         <h3>Recursos Disponibles</h3>
-                        
+
                         <div class="resource-grid">
                             <div class="resource-card">
                                 <h3>Pacientes</h3>
-                                <p>Gestión de información demográfica de pacientes según el perfil PatientPe de la guía nacional.</p>
+                                <p>Gestión de información demográfica de pacientes según el perfil PatientPe de la guía
+                                    nacional.</p>
                                 <a href="pacientes.html">Ver Pacientes</a>
                             </div>
-                            
+
                             <div class="resource-card">
                                 <h3>Profesionales</h3>
-                                <p>Registro de profesionales de salud, especialidades y cualificaciones (PractitionerPe).</p>
+                                <p>Registro de profesionales de salud, especialidades y cualificaciones
+                                    (PractitionerPe).</p>
                                 <a href="profesionales.html">Ver Profesionales</a>
                             </div>
-                            
+
                             <div class="resource-card">
                                 <h3>Organizaciones</h3>
                                 <p>Instituciones de salud y establecimientos registrados según OrganizationPe.</p>
                                 <a href="organizaciones.html">Ver Organizaciones</a>
                             </div>
-                            
+
                             <div class="resource-card">
                                 <h3>Condiciones</h3>
                                 <p>Diagnósticos y condiciones médicas de pacientes con códigos CIE-10.</p>
                                 <a href="condiciones.html">Ver Condiciones</a>
                             </div>
-                            
+
                             <div class="resource-card">
                                 <h3>Medicamentos</h3>
                                 <p>Registro de medicamentos y tratamientos prescritos (MedicationStatement).</p>
                                 <a href="medicamentos.html">Ver Medicamentos</a>
                             </div>
                         </div>
-                        
+
                         <hr>
-                        
+
                         <h3>API FHIR</h3>
                         <p>Este servidor implementa la especificación HL7 FHIR R4. Endpoints disponibles:</p>
                         <ul>
                             <li><strong>Base URL:</strong> <code>/fhir</code></li>
-                            <li><strong>Metadata:</strong> <a href="/fhir/metadata" target="_blank">/fhir/metadata</a></li>
-                            <li><strong>Swagger UI:</strong> <a href="/fhir/swagger-ui/" target="_blank">/fhir/swagger-ui/</a></li>
+                            <li><strong>Metadata:</strong> <a href="/fhir/metadata" target="_blank">/fhir/metadata</a>
+                            </li>
+                            <li><strong>Swagger UI:</strong> <a href="/fhir/swagger-ui/"
+                                    target="_blank">/fhir/swagger-ui/</a></li>
                         </ul>
 
                     </div>
@@ -196,4 +210,5 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 </body>
+
 </html>
